@@ -1,0 +1,9 @@
+@font-face {
+    font-family: "title";
+    src: url("title.otf") format("opentype");
+}
+
+@font-face {
+    font-family: "alltext";
+    src: url("alltext.ttf") format("truetype");
+}

@@ -1,0 +1,31 @@
+/* Сброс некоторых стандартных стилей браузера */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Базовые стили для body */
+body {
+  font-family: 'Roboto', Arial, sans-serif;
+  background-color: #fdf6f0; /* совпадает с theme.palette.background.default */
+  color: #3e2723; /* совпадает с theme.palette.text.primary */
+}
+
+/* Ссылки */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Контейнер с отступами */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Универсальные отступы для секций */
+.section {
+  padding: 16px;
+}
