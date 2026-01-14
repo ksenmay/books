@@ -1,8 +1,6 @@
-// /src/mocks/handlers.ts
 import { http } from 'msw';
 
 export const handlers = [
-  // Мок логина
   http.post('/api/login', async ({ request }) => {
     const { username } = await request.json() as { username: string };
     return new Response(
