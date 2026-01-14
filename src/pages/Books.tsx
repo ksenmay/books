@@ -18,13 +18,36 @@ const BooksPage = () => {
   return (
     <Box sx={{ p: 2 }}>
       <Typography variant="h4" gutterBottom>
-        Список книг
+        Каталог книг
       </Typography>
 
-      <Grid container spacing={2}>
+      <Grid container spacing={3} justifyContent="center">
         {books.map((book) => (
-          <Grid item xs={12} sm={6} md={4} key={book.id}>
-            <BookCard book={book} />
+          <Grid
+            item
+            key={book.id}
+            xs={12}
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
+            <Box
+              sx={{
+                width: {
+                  xs: '90vw', // 📱 мобильные
+                  sm: '30vw', // 📲 планшеты
+                  md: '25vw', // 💻 ноутбуки
+                },
+                height: {
+                  xs: '108vw', // 120% от ширины страницы
+                  sm: '53vw',  // 53% от ширины страницы
+                  md: '33vw',  // 26% от ширины страницы
+                },
+              }}
+            >
+              <BookCard book={book} />
+            </Box>
           </Grid>
         ))}
       </Grid>

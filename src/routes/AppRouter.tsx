@@ -7,6 +7,7 @@ import BooksPage from '../pages/Books';
 import ProfilePage from '../pages/Profile';
 import FavoritesPage from '../pages/Favorites';
 import NotFoundPage from '../pages/NotFound';
+import BookDetailPage from '../pages/BookDetailPage';
 import { useAuthStore } from '../stores/useAuthStore';
 
 // Компонент для защищённого маршрута
@@ -31,7 +32,8 @@ const AppRouter: React.FC = () => (
     <Route path="/books" element={<PrivateRoute><BooksPage /></PrivateRoute>} />
     <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
     <Route path="/favorites" element={<PrivateRoute><FavoritesPage /></PrivateRoute>} />
-
+    <Route path="/books" element={<BooksPage />} />
+    <Route path="/books/:id" element={<BookDetailPage />} />
     {/* 404 */}
     <Route path="*" element={<NotFoundPage />} />
   </Routes>

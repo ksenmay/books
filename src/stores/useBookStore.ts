@@ -1,5 +1,8 @@
 import { create } from 'zustand';
 import type { Book } from '../types/book';
+import book1 from '../assets/images/book1.jpg';
+import book2 from '../assets/images/book2.jpg';
+import book3 from '../assets/images/book3.jpg';
 
 type BookState = {
   books: Book[];
@@ -23,8 +26,10 @@ const mockBooks: Book[] = [
     ownerId: '1',
     exchangeable: true,
     price: 500,
-    status: 'available',
-    images: [],
+    status: 'доступна',
+    images: [book1],
+    reviews: [],
+    quotes: [],
     createdAt: new Date().toISOString(),
   },
   {
@@ -34,10 +39,13 @@ const mockBooks: Book[] = [
     ownerId: '2',
     exchangeable: false,
     price: 700,
-    status: 'available',
-    images: [],
+    status: 'зарезервирована',
+    images: [book2, book3],
+    reviews: [],
+    quotes: [],
     createdAt: new Date().toISOString(),
   },
+
 ];
 
 export const useBookStore = create<BookState>((set, get) => ({
@@ -45,7 +53,10 @@ export const useBookStore = create<BookState>((set, get) => ({
   selectedBook: null,
   isLoading: false,
 
-  setBooks: (books) => set({ books }),
+  setBooks: (books) => {
+    set({ isLoading: true });
+    setTimeout(() => set({ books, isLoading: false }), 300);
+  },
 
   addBook: (book) =>
     set((state) => ({
@@ -53,22 +64,24 @@ export const useBookStore = create<BookState>((set, get) => ({
     })),
 
   updateBook: (id, data) =>
-    set((state) => ({
-      books: state.books.map((book) =>
+    set((state) => {
+      const books = state.books.map((book) =>
         book.id === id ? { ...book, ...data } : book
-      ),
-      selectedBook:
+      );
+      const selectedBook =
         state.selectedBook?.id === id
           ? { ...state.selectedBook, ...data }
-          : state.selectedBook,
-    })),
+          : state.selectedBook;
+      return { books, selectedBook };
+    }),
 
   removeBook: (id) =>
-    set((state) => ({
-      books: state.books.filter((book) => book.id !== id),
-      selectedBook:
-        state.selectedBook?.id === id ? null : state.selectedBook,
-    })),
+    set((state) => {
+      const books = state.books.filter((book) => book.id !== id);
+      const selectedBook =
+        state.selectedBook?.id === id ? null : state.selectedBook;
+      return { books, selectedBook };
+    }),
 
   selectBook: (book) => set({ selectedBook: book }),
 }));

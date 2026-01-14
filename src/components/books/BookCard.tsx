@@ -5,10 +5,14 @@ import {
   Typography,
   Box,
   Chip,
+  IconButton,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import type { Book } from '../../types/book';
 import { useBookStore } from '../../stores/useBookStore';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { useState } from 'react';
 
 type Props = {
   book: Book;
@@ -17,10 +21,27 @@ type Props = {
 const BookCard = ({ book }: Props) => {
   const navigate = useNavigate();
   const selectBook = useBookStore((state) => state.selectBook);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const images = book.images ?? [];
 
   const handleClick = () => {
     selectBook(book);
     navigate(`/books/${book.id}`);
+  };
+
+  const handlePrevImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prev) =>
+      prev === 0 ? images.length - 1 : prev - 1
+    );
+  };
+
+  const handleNextImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prev) =>
+      prev === images.length - 1 ? 0 : prev + 1
+    );
   };
 
   return (
@@ -28,40 +49,102 @@ const BookCard = ({ book }: Props) => {
       onClick={handleClick}
       sx={{
         cursor: 'pointer',
-        height: '100%',
+        height: '100%',        // ⬅ обязательно
         display: 'flex',
         flexDirection: 'column',
       }}
-    >
-      {book.images?.[0] && (
-        <CardMedia
-          component="img"
-          height="180"
-          image={book.images[0]}
-          alt={book.title}
-        />
+>
+
+      {/* ===== Изображение (70%) ===== */}
+      {images.length > 0 && (
+        <Box
+          sx={{
+            position: 'relative',
+            height: '60%',
+          }}
+        >
+          <CardMedia
+            component="img"
+            image={images[currentImageIndex]}
+            alt={book.title}
+            sx={{
+              height: '100%',
+              width: '100%',
+              objectFit: 'cover',
+            }}
+          />
+
+          {images.length > 1 && (
+            <>
+              <IconButton
+                size="small"
+                onClick={handlePrevImage}
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: 6,
+                  transform: 'translateY(-50%)',
+                  backgroundColor: 'rgba(0,0,0,0.4)',
+                  color: 'white',
+                  '&:hover': { backgroundColor: 'rgba(0,0,0,0.6)' },
+                }}
+              >
+                <ArrowBackIosNewIcon fontSize="small" />
+              </IconButton>
+
+              <IconButton
+                size="small"
+                onClick={handleNextImage}
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  right: 6,
+                  transform: 'translateY(-50%)',
+                  backgroundColor: 'rgba(0,0,0,0.4)',
+                  color: 'white',
+                  '&:hover': { backgroundColor: 'rgba(0,0,0,0.6)' },
+                }}
+              >
+                <ArrowForwardIosIcon fontSize="small" />
+              </IconButton>
+            </>
+          )}
+        </Box>
       )}
 
-      <CardContent sx={{ flexGrow: 1 }}>
-        <Typography variant="h6" gutterBottom>
-          {book.title}
-        </Typography>
-
-        <Typography variant="body2" color="text.secondary">
-          {book.author}
-        </Typography>
-
-        {book.price && (
-          <Typography sx={{ mt: 1 }}>
-            {book.price} ₽
+      {/* ===== Контент (30%) ===== */}
+      <CardContent
+        sx={{
+          height: '40%',
+          p: 2,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Box>
+          <Typography variant="h6" noWrap>
+            {book.title}
           </Typography>
-        )}
 
-        <Box sx={{ mt: 1 }}>
-          {book.exchangeable && (
-            <Chip label="Обмен" size="small" sx={{ mr: 1 }} />
+          <Typography variant="body2" color="text.secondary" noWrap>
+            {book.author}
+          </Typography>
+        </Box>
+
+        <Box>
+          {book.price && (
+            <Typography sx={{ fontWeight: 500 }}>
+              {book.price} ₽
+            </Typography>
           )}
-          <Chip label={book.status} size="small" />
+
+          <Box sx={{ mt: 0.5 }}>
+            {book.exchangeable && (
+              <Chip label="Обмен" size="small" sx={{ mr: 1 }} />
+            )}
+            <Chip label={book.status} size="small" />
+          </Box>
         </Box>
       </CardContent>
     </Card>
