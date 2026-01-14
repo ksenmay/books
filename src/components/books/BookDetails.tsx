@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import type { Book } from '../types/book';
+import type { Book } from '../../types/book';
 import { Link as RouterLink } from 'react-router-dom';
 
 interface BookDetailsProps {
