@@ -7,60 +7,88 @@ import {
   TextField,
   Button,
   Box,
+  Rating,
   Typography,
 } from '@mui/material';
+import { v4 as uuid } from 'uuid';
 
-interface AddReviewModalProps {
+import { useAuthStore } from '../../stores/useAuthStore';
+import { useReviewStore } from '../../stores/useReviewStore';
+import type { Review } from '../../types/review';
+
+interface ReviewFormProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (review: { text: string; rating?: number }) => void;
+  bookId: string;
 }
 
-const AddReviewModal: React.FC<AddReviewModalProps> = ({ open, onClose, onSubmit }) => {
-  const [reviewText, setReviewText] = useState('');
-  const [rating, setRating] = useState<number | ''>('');
+const ReviewForm: React.FC<ReviewFormProps> = ({ open, onClose, bookId }) => {
+  const user = useAuthStore((s) => s.user);
+  const addReview = useReviewStore((s) => s.addReview);
 
+  const [rating, setRating] = useState<number | null>(5);
+  const [text, setText] = useState('');
   const [error, setError] = useState('');
 
+  if (!user) return null;
+
   const handleSubmit = () => {
-    if (!reviewText.trim()) {
-      setError('Отзыв не может быть пустым');
+    if (!text.trim()) {
+      setError('Введите текст отзыва');
       return;
     }
 
-    onSubmit({ text: reviewText, rating: rating === '' ? undefined : Number(rating) });
-    setReviewText('');
-    setRating('');
-    setError('');
+    if (!rating) {
+      setError('Выберите оценку');
+      return;
+    }
+
+    const review: Review = {
+      id: uuid(),
+      bookId,
+      authorId: user.id,
+      author: user,
+      rating,
+      text: text.trim(),
+      createdAt: new Date().toISOString(),
+    };
+
+    addReview(review);
     onClose();
+    setText('');
+    setRating(5);
+    setError('');
   };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Добавить отзыв</DialogTitle>
+      <DialogTitle>Оставить отзыв</DialogTitle>
+
       <DialogContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+          <Typography variant="body2">
+            Пользователь: <b>{user.username}</b>
+          </Typography>
+
+          <Rating
+            value={rating}
+            onChange={(_, value) => setRating(value)}
+            size="large"
+          />
+
           <TextField
             label="Текст отзыва"
             multiline
             minRows={4}
-            value={reviewText}
-            onChange={(e) => setReviewText(e.target.value)}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
             error={!!error}
             helperText={error}
-            fullWidth
-            required
-          />
-          <TextField
-            label="Оценка (1-5)"
-            type="number"
-            inputProps={{ min: 1, max: 5 }}
-            value={rating}
-            onChange={(e) => setRating(e.target.value === '' ? '' : Number(e.target.value))}
             fullWidth
           />
         </Box>
       </DialogContent>
+
       <DialogActions sx={{ px: 3, pb: 2 }}>
         <Button onClick={onClose}>Отмена</Button>
         <Button
@@ -71,24 +99,13 @@ const AddReviewModal: React.FC<AddReviewModalProps> = ({ open, onClose, onSubmit
             px: 4,
             py: 1.2,
             textTransform: 'none',
-            fontSize: '1rem',
-            color: '#fffaf3',
-            borderColor: 'rgba(255, 250, 243, 0.6)',
-            background: 'rgba(255, 255, 255, 0.05)',
-            backdropFilter: 'blur(6px)',
-            transition: 'all 0.3s ease',
-            '&:hover': {
-              background: 'rgba(255, 255, 255, 0.12)',
-              borderColor: '#fffaf3',
-              transform: 'scale(1.05)',
-            },
           }}
         >
-          Добавить
+          Опубликовать
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-export default AddReviewModal;
+export default ReviewForm;

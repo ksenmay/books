@@ -1,9 +1,11 @@
 @font-face {
     font-family: "title";
     src: url("title.otf") format("opentype");
+    font-display: swap;
 }
 
 @font-face {
     font-family: "alltext";
     src: url("alltext.ttf") format("truetype");
+    font-display: swap;
 }

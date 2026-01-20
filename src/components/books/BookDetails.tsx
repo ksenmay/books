@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import { Button } from '@mui/material';
+import ReviewForm from '../../features/reviews/ReviewForm';
+import { useReviewStore } from '../../stores/useReviewStore';
+
 import {
   Card,
   CardContent,
@@ -21,6 +25,9 @@ interface BookDetailsProps {
 
 const BookDetails: React.FC<BookDetailsProps> = ({ book }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const reviews = useReviewStore((s) => s.getByBookId(book.id));
+  const [openReview, setOpenReview] = useState(false);
+
 
   const handlePrevImage = () => {
     setCurrentImageIndex(prev =>
@@ -138,19 +145,44 @@ const BookDetails: React.FC<BookDetailsProps> = ({ book }) => {
         )}
 
         {/* Отзывы */}
-        {book.reviews && book.reviews.length > 0 && (
-          <Box mt={2}>
-            <Typography variant="subtitle2">Отзывы:</Typography>
-            <Stack spacing={1} mt={1}>
-              {book.reviews.map((r, idx) => (
-                <Typography key={idx} variant="body2">
-                  {r.text}
+      <Box mt={2}>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Typography variant="subtitle2">Отзывы</Typography>
+          <Button size="small" onClick={() => setOpenReview(true)}>
+            Оставить отзыв
+          </Button>
+        </Box>
+
+        {reviews.length === 0 ? (
+          <Typography variant="body2" color="text.secondary" mt={1}>
+            Отзывов пока нет
+          </Typography>
+        ) : (
+          <Stack spacing={1} mt={1}>
+            {reviews.map((r) => (
+              <Box key={r.id}>
+                <Typography variant="body2">{r.text}</Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {r.author?.username} • {r.rating}/5
                 </Typography>
-              ))}
-            </Stack>
-          </Box>
+              </Box>
+            ))}
+          </Stack>
         )}
+      </Box>
+
       </CardContent>
+
+      <ReviewForm
+        open={openReview}
+        onClose={() => setOpenReview(false)}
+        bookId={book.id}
+      />
+
     </Card>
   );
 };
