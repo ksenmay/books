@@ -24,9 +24,6 @@ const BooksPage = () => {
       <Grid container spacing={3} justifyContent="center">
         {books.map((book) => (
           <Grid
-            item
-            key={book.id}
-            xs={12}
             sx={{
               display: 'flex',
               justifyContent: 'center',

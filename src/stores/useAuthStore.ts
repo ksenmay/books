@@ -5,7 +5,7 @@ import type { AuthState } from '../types/authState';
 
 const mockUsers: Array<User & { password: string; profileData?: any }> = [
   {
-    id: '1',
+    id: '2',
     username: 'admin',
     email: 'admin@mail.com',
     lastName: 'Администратор',
@@ -18,7 +18,7 @@ const mockUsers: Array<User & { password: string; profileData?: any }> = [
     profileData: { country: '', city: '', avatar: '' },
   },
   {
-    id: '2',
+    id: '1',
     username: 'user',
     email: 'user@mail.com',
     lastName: 'Смертный',

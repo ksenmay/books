@@ -1,12 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardMedia,
-  Typography,
-  Box,
-  Chip,
-  IconButton,
-} from '@mui/material';
+import { Card, CardContent, CardMedia, Typography, Box, Chip, IconButton, Tooltip} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import type { Book } from '../../types/book';
 import { useBookStore } from '../../stores/useBookStore';
@@ -140,11 +132,38 @@ const BookCard = ({ book }: Props) => {
           )}
 
           <Box sx={{ mt: 0.5 }}>
-            {book.exchangeable && (
-              <Chip label="Обмен" size="small" sx={{ mr: 1 }} />
-            )}
-            <Chip label={book.status} size="small" />
-          </Box>
+          <Tooltip
+            title={
+              book.exchangeable
+                ? 'С согласия владельца вы можете обменять свою книгу на данную'
+                : 'Вы можете купить данную книгу за указанную цену'
+            }
+            arrow
+            placement="top"
+            componentsProps={{
+              tooltip: {
+                sx: {
+                  backgroundColor: 'rgba(0,0,0,0.7)',
+                  fontSize: '0.875rem',
+                },
+              },
+              arrow: {
+                sx: {
+                  color: 'rgba(0,0,0,0.7)',
+                },
+              },
+            }}
+          >
+            <Chip
+              label={book.exchangeable ? 'обмен' : 'покупка'}
+              size="small"
+              sx={{ mr: 1, cursor: 'help' }}
+            />
+          </Tooltip>
+
+          <Chip label={book.status} size="small" />
+        </Box>
+
         </Box>
       </CardContent>
     </Card>
