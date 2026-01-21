@@ -18,9 +18,6 @@ type BookState = {
 
   toggleFavorite: (userId: string, bookId: string) => void;
   selectBook: (book: Book | null) => void;
-
-  removeReview: (bookId: string, reviewId: string) => void;
-  removeQuote: (bookId: string, quoteId: string) => void;
 };
 
 const mockBooks: Book[] = [
@@ -91,36 +88,6 @@ export const useBookStore = create<BookState>()(
             state.selectedBook?.id === id ? null : state.selectedBook;
           return { books, selectedBook };
         }),
-
-        // внутри create<BookState>
-        removeReview: (bookId: string, reviewId: string) =>
-        set((state) => {
-          const books = state.books.map((book) => {
-            if (book.id === bookId) {
-              return {
-                ...book,
-                reviews: book.reviews?.filter((r) => r.id !== reviewId) || [],
-              };
-            }
-            return book;
-          });
-          return { books };
-        }),
-
-      removeQuote: (bookId: string, quoteId: string) =>
-        set((state) => {
-          const books = state.books.map((book) => {
-            if (book.id === bookId) {
-              return {
-                ...book,
-                quotes: book.quotes?.filter((q) => q.id !== quoteId) || [],
-              };
-            }
-            return book;
-          });
-          return { books };
-        }),
-
 
       toggleFavorite: (userId, bookId) =>
         set((state) => {
