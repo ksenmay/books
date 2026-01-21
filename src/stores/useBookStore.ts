@@ -106,10 +106,10 @@ export const useBookStore = create<BookState>()(
       selectBook: (book) => set({ selectedBook: book }),
     }),
     {
-      name: 'books-storage', // ключ в localStorage
+      name: 'books-storage', 
       partialize: (state) => ({
         books: state.books,
-        favorites: state.favorites, // теперь сохраняем избранное
+        favorites: state.favorites, 
       }),
     }
   )

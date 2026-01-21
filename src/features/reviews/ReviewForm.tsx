@@ -34,7 +34,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ open, onClose, bookId }) => {
 
   const handleSubmit = () => {
     if (!text.trim()) {
-      setError('Введите текст отзыва');
+      setError('Введите текст рецензии');
       return;
     }
 
@@ -62,7 +62,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ open, onClose, bookId }) => {
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Оставить отзыв</DialogTitle>
+      <DialogTitle>Оставить рецензию</DialogTitle>
 
       <DialogContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
@@ -77,7 +77,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ open, onClose, bookId }) => {
           />
 
           <TextField
-            label="Текст отзыва"
+            label="Текст рецензии"
             multiline
             minRows={4}
             value={text}

@@ -13,7 +13,7 @@ import {
   IconButton,
 } from '@mui/material';
 import BookImagesCarousel from '../../features/books/BookImagesCarousel';
-import type { Book } from '../../types/book';
+import type { Book, BookStatus } from '../../types/book';
 import { useReviewStore } from '../../stores/useReviewStore';
 import { useQuoteStore } from '../../stores/useQuoteStore';
 import { useAuthStore } from '../../stores/useAuthStore';
@@ -35,15 +35,9 @@ const BookMainInfo = ({ book, onReserve }: BookMainInfoProps) => {
 
   const owner = users.find((u) => u.id === book.ownerId);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isReserved, setIsReserved] = useState(book.status === 'зарезервирована');
 
   const isOwner = user?.id === book.ownerId;
   const isFavorited = user?.id ? favorites[user.id]?.includes(book.id) : false;
-
-  // Синхронизация локального статуса с book.status
-  useEffect(() => {
-    setIsReserved(book.status === 'зарезервирована' || book.status === 'продана');
-  }, [book.status]);
 
   const { reviewsCount, quotesCount, averageRating } = useMemo(() => {
     const bookReviews = reviews.filter((r) => r.bookId === book.id);
@@ -190,13 +184,16 @@ const BookMainInfo = ({ book, onReserve }: BookMainInfoProps) => {
         </Box>
 
           {/* Кнопки действий */}
-          {!isOwner && (
-            <>
-              {isReserved ? (
-                <Typography variant="body1" sx={{ m: 2, fontWeight: 600, color: 'primary.main' }}>
-                  Зарезервировано
-                </Typography>
-              ) : (
+          {book.status !== 'доступна' ? (
+              <Typography
+                variant="body1"
+                sx={{ m: 2, fontWeight: 600, color: 'primary.main' }}
+              >
+                {book.status === 'зарезервирована' && 'Зарезервирована'}
+                {book.status === 'в обмене' && 'В обмене'}
+                {book.status === 'продана' && 'Куплена'}
+              </Typography>
+            ) : (
                 <Box
                   sx={{
                     m: 2,
@@ -214,6 +211,7 @@ const BookMainInfo = ({ book, onReserve }: BookMainInfoProps) => {
                       arrow
                       placement="top"
                     >
+
                       <Button
                         sx={{
                           borderWidth: 1,
@@ -221,7 +219,10 @@ const BookMainInfo = ({ book, onReserve }: BookMainInfoProps) => {
                           width: { xs: '90%', sm: 'auto' },
                           '&:hover, &:focus': { backgroundColor: 'rgba(25, 118, 210, 0.08)' },
                         }}
-                        onClick={() => setIsModalOpen(true)}
+                        onClick={() => {
+                          updateBook(book.id, { status: 'в обмене' });
+                          setIsModalOpen(true);
+                        }}
                       >
                         Обменять
                       </Button>
@@ -242,11 +243,10 @@ const BookMainInfo = ({ book, onReserve }: BookMainInfoProps) => {
                         '&:hover, &:focus': { backgroundColor: 'rgba(156, 39, 176, 0.08)' },
                       }}
                       onClick={() => {
-                        setIsReserved(true);
-                        setIsModalOpen(true);
-                        if (onReserve) onReserve(book.id);
                         updateBook(book.id, { status: 'зарезервирована' });
+                        setIsModalOpen(true);
                       }}
+
                     >
                       Зарезервировать
                     </Button>
@@ -266,10 +266,11 @@ const BookMainInfo = ({ book, onReserve }: BookMainInfoProps) => {
                           width: { xs: '90%', sm: 'auto' },
                           '&:hover, &:focus': { backgroundColor: 'rgba(76, 175, 80, 0.08)' },
                         }}
-                        onClick={() => {
-                          setIsModalOpen(true);
-                          updateBook(book.id, { status: 'продана' });
-                        }}
+                       onClick={() => {
+                        updateBook(book.id, { status: 'продана' });
+                        setIsModalOpen(true);
+                      }}
+
                       >
                         Купить
                       </Button>
@@ -277,8 +278,6 @@ const BookMainInfo = ({ book, onReserve }: BookMainInfoProps) => {
                   )}
                 </Box>
               )}
-            </>
-          )}
 
           {/* Диалог с контактами владельца */}
           <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
