@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useBookStore } from '../stores/useBookStore';
-import BookImagesCarousel from '../features/books/BookImagesCarousel';
+import BookMainInfo from '../components/books/BookMainInfo';
 import ReviewList from '../features/reviews/ReviewList';
 import ReviewForm from '../features/reviews/ReviewForm';
 import { useReviewStore } from '../stores/useReviewStore';
@@ -40,63 +40,7 @@ const BookDetailPage: React.FC = () => {
       }}
     >
       {/* Верхний блок: Карусель слева, Информация справа */}
-      <Grid
-        container
-        spacing={2}
-        sx={{
-          width: '100%',
-          maxWidth: '1200px',
-          justifyContent: 'center',
-          mb: 4,
-        }}
-      >
-        {/* Левая часть: Карусель */}
-        <Grid
-          sx={{
-            width: { xs: '90%', md: '40%' },
-          }}
-        >
-          <BookImagesCarousel images={book.images} alt={book.title} />
-        </Grid>
-
-        {/* Правая часть: Информация о книге */}
-        <Grid
-          sx={{
-            width: { xs: '90%', md: '50%' },
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <Card sx={{ width: '100%', height: '100%' }}>
-            <CardContent>
-              {book.owner && (
-                <Typography variant="body1" gutterBottom>
-                  Владелец:{' '}
-                  <Link href={`/profile/${book.owner.id}`}>
-                    {book.owner.username || book.owner.fullName}
-                  </Link>
-                </Typography>
-              )}
-              <Typography variant="body1" gutterBottom>
-                Наименование книги: "{book.title}"
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Автор: {book.author}
-              </Typography>
-              {book.description && (
-                <Typography variant="body2" mt={1}>
-                  {book.description}
-                </Typography>
-              )}
-              {book.price && (
-                <Typography variant="body2" mt={1}>
-                  Цена: {book.price} ₽
-                </Typography>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+      <BookMainInfo book={book} />
 
       {/* Нижний блок: Отзывы и Цитаты */}
       <Box
