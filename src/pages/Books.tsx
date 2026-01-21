@@ -1,5 +1,6 @@
-import { Box, Typography, Grid } from '@mui/material';
-import { useEffect } from 'react';
+import { Box, Typography, Grid, Button, Collapse } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { AddBookForm } from '../features/books/AddBookForm';
 import { useBookStore } from '../stores/useBookStore';
 import BookCard from '../components/books/BookCard';
 
@@ -7,6 +8,8 @@ const BooksPage = () => {
   const books = useBookStore((state) => state.books);
   const isLoading = useBookStore((state) => state.isLoading);
   const setBooks = useBookStore((state) => state.setBooks);
+
+  const [showAddForm, setShowAddForm] = useState(false);
 
   useEffect(() => {
     setBooks(books);
@@ -16,30 +19,49 @@ const BooksPage = () => {
   if (books.length === 0) return <Typography>Книг пока нет</Typography>;
 
   return (
-    <Box sx={{ p: 2 }}>
-      <Typography variant="h4" gutterBottom>
-        Каталог книг
-      </Typography>
+    <>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          mb: 3,
+        }}
+      >
+        <Typography variant="h4">
+          Каталог книг
+        </Typography>
+
+        <Button
+          onClick={() => setShowAddForm((v) => !v)}
+        >
+          {showAddForm ? 'Закрыть' : 'Добавить книгу'}
+        </Button>
+      </Box>
+
+      <Collapse in={showAddForm}>
+        <Box sx={{ mb: 4 }}>
+          <AddBookForm />
+        </Box>
+      </Collapse>
 
       <Grid container spacing={3} justifyContent="center">
         {books.map((book) => (
           <Grid
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-            }}
+            key={book.id}
+            sx={{ display: 'flex', justifyContent: 'center' }}
           >
             <Box
               sx={{
                 width: {
-                  xs: '90vw', // 📱 мобильные
-                  sm: '30vw', // 📲 планшеты
-                  md: '25vw', // 💻 ноутбуки
+                  xs: '90vw',
+                  sm: '30vw',
+                  md: '25vw',
                 },
                 height: {
-                  xs: '108vw', // 120% от ширины страницы
-                  sm: '53vw',  // 53% от ширины страницы
-                  md: '33vw',  // 26% от ширины страницы
+                  xs: '108vw',
+                  sm: '53vw',
+                  md: '33vw',
                 },
               }}
             >
@@ -48,7 +70,7 @@ const BooksPage = () => {
           </Grid>
         ))}
       </Grid>
-    </Box>
+    </>
   );
 };
 
