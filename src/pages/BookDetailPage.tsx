@@ -61,12 +61,14 @@ const BookDetailPage: React.FC = () => {
             <Grid container sx={{ height: '100%' }}>
               {/* Рецензии */}
               <BookReviewsSection
+                book={book}
                 reviews={reviews}
                 onAddReview={() => setOpenReview(true)}
               />
 
               {/* Цитаты */}
               <BookQuotesSection
+               book={book}
                 quotes={quotes}
                 onAddQuote={() => setOpenQuote(true)}
                 />

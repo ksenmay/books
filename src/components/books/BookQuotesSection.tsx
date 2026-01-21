@@ -2,13 +2,15 @@ import React from 'react';
 import { Grid, Box, Typography, Button, Tooltip } from '@mui/material';
 import QuotesList from '../../features/quotes/QuoteList';
 import type { Quote } from '../../types/quote';
+import type { Book } from '../../types/book';
 
 type BookQuotesSectionProps = {
+  book: Book;
   quotes: Quote[];
   onAddQuote: () => void;
 };
 
-const BookQuotesSection: React.FC<BookQuotesSectionProps> = ({ quotes, onAddQuote }) => {
+const BookQuotesSection: React.FC<BookQuotesSectionProps> = ({ book, quotes, onAddQuote }) => {
   return (
     <Grid
       sx={{
@@ -60,7 +62,10 @@ const BookQuotesSection: React.FC<BookQuotesSectionProps> = ({ quotes, onAddQuot
       </Box>
 
       <Box sx={{ p: 2, overflowY: 'auto' }}>
-        <QuotesList quotes={quotes} />
+        <QuotesList 
+          quotes={quotes} 
+          bookId={book.id}
+          bookOwnerId={book.ownerId}/>
       </Box>
     </Grid>
   );

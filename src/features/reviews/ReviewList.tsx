@@ -1,14 +1,23 @@
 import React from 'react';
-import { Card, CardContent, Typography, Stack, Box, Rating } from '@mui/material';
+import { Card, CardContent, Typography, Stack, Box, Rating, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import type { Review } from '../../types/review';
+import { useAuthStore } from '../../stores/useAuthStore';
+import { useReviewStore } from '../../stores/useReviewStore';
+
 
 interface ReviewsListProps {
   reviews: Review[];
+  bookId: string;
+  bookOwnerId: string;
 }
 
-const ReviewList: React.FC<ReviewsListProps> = ({ reviews }) => {
-  if (!reviews || reviews.length === 0) return <Typography>Нет отзывов</Typography>;
+const ReviewList: React.FC<ReviewsListProps> = ({ reviews, bookId, bookOwnerId }) => {
 
+  const user = useAuthStore((state) => state.user);
+  const removeReview = useReviewStore((state) => state.removeReview);
+  if (!reviews || reviews.length === 0) return <Typography>Нет рецензий</Typography>;  
+  const canDelete = user?.id === bookOwnerId;
   return (
     <Stack spacing={2}>
       {reviews.map((r) => (
@@ -21,7 +30,16 @@ const ReviewList: React.FC<ReviewsListProps> = ({ reviews }) => {
             boxShadow: 'none',            // убираем тень
           }}
         >
-          <CardContent sx={{ p: 0 }}>
+          <CardContent sx={{ p: 0, position: 'relative' }}>            
+            {canDelete && (
+              <IconButton
+                size="small"
+                sx={{ position: 'absolute', top: 0, right: 0 }}
+                onClick={() => removeReview(r.id)}
+              >
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            )}
             {/* Рейтинг звездочками */}
             <Rating
               value={r.rating}

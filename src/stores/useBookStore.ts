@@ -9,13 +9,18 @@ type BookState = {
   books: Book[];
   selectedBook: Book | null;
   isLoading: boolean;
+  favorites: Record<string, string[]>; // userId → массив id книг
 
   setBooks: (books: Book[]) => void;
   addBook: (book: Book) => void;
   updateBook: (id: string, data: Partial<Book>) => void;
   removeBook: (id: string) => void;
 
+  toggleFavorite: (userId: string, bookId: string) => void;
   selectBook: (book: Book | null) => void;
+
+  removeReview: (bookId: string, reviewId: string) => void;
+  removeQuote: (bookId: string, quoteId: string) => void;
 };
 
 const mockBooks: Book[] = [
@@ -55,6 +60,7 @@ export const useBookStore = create<BookState>()(
       books: mockBooks,
       selectedBook: null,
       isLoading: false,
+      favorites: {},
 
       setBooks: (books) => {
         set({ isLoading: true });
@@ -86,11 +92,58 @@ export const useBookStore = create<BookState>()(
           return { books, selectedBook };
         }),
 
+        // внутри create<BookState>
+        removeReview: (bookId: string, reviewId: string) =>
+        set((state) => {
+          const books = state.books.map((book) => {
+            if (book.id === bookId) {
+              return {
+                ...book,
+                reviews: book.reviews?.filter((r) => r.id !== reviewId) || [],
+              };
+            }
+            return book;
+          });
+          return { books };
+        }),
+
+      removeQuote: (bookId: string, quoteId: string) =>
+        set((state) => {
+          const books = state.books.map((book) => {
+            if (book.id === bookId) {
+              return {
+                ...book,
+                quotes: book.quotes?.filter((q) => q.id !== quoteId) || [],
+              };
+            }
+            return book;
+          });
+          return { books };
+        }),
+
+
+      toggleFavorite: (userId, bookId) =>
+        set((state) => {
+          const userFavs = state.favorites[userId] || [];
+          const isFav = userFavs.includes(bookId);
+          return {
+            favorites: {
+              ...state.favorites,
+              [userId]: isFav
+                ? userFavs.filter((id) => id !== bookId)
+                : [...userFavs, bookId],
+            },
+          };
+        }),
+
       selectBook: (book) => set({ selectedBook: book }),
     }),
     {
       name: 'books-storage', // ключ в localStorage
-      partialize: (state) => ({ books: state.books }), // сохраняем только массив книг
+      partialize: (state) => ({
+        books: state.books,
+        favorites: state.favorites, // теперь сохраняем избранное
+      }),
     }
   )
 );

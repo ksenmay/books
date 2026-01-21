@@ -1,13 +1,15 @@
 import { Box, Button, Grid, Typography, Tooltip } from '@mui/material';
 import ReviewList from '../../features/reviews/ReviewList';
 import type { Review } from '../../types/review';
+import type { Book } from '../../types/book';
 
 type BookReviewsSectionProps = {
+  book: Book;
   reviews: Review[];
   onAddReview: () => void;
 };
 
-const BookReviewsSection = ({ reviews, onAddReview }: BookReviewsSectionProps) => {
+const BookReviewsSection = ({ book, reviews, onAddReview }: BookReviewsSectionProps) => {
   return (
     <Grid
       sx={{
@@ -72,7 +74,11 @@ const BookReviewsSection = ({ reviews, onAddReview }: BookReviewsSectionProps) =
 
       {/* List */}
       <Box sx={{ p: 2, overflowY: 'auto' }}>
-        <ReviewList reviews={reviews} />
+        <ReviewList
+          reviews={reviews}
+          bookId={book.id}
+          bookOwnerId={book.ownerId}
+        />
       </Box>
     </Grid>
   );

@@ -20,6 +20,7 @@ type ReviewState = {
 
   getByBookId: (bookId: string) => Review[];
   addReview: (review: Review) => void;
+  removeReview: (reviewId: string) => void
 };
 
 export const useReviewStore = create<ReviewState>((set, get) => ({
@@ -33,4 +34,12 @@ export const useReviewStore = create<ReviewState>((set, get) => ({
     saveReviews(updated);
     set({ reviews: updated });
   },
+
+  removeReview: (reviewId: string) => {
+    const updated = get().reviews.filter(r => r.id !== reviewId);
+    saveReviews(updated);
+    set({ reviews: updated });
+  }
+
+
 }));

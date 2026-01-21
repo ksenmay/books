@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { Quote } from '../types/quote';
+import type { q } from 'framer-motion/client';
 
 const STORAGE_KEY = 'quotes';
 
@@ -20,6 +21,7 @@ type QuoteState = {
 
   getByBookId: (bookId: string) => Quote[];
   addQuote: (quote: Quote) => void;
+  removeQuote: (quoteId: string) => void;
 };
 
 export const useQuoteStore = create<QuoteState>((set, get) => ({
@@ -33,4 +35,11 @@ export const useQuoteStore = create<QuoteState>((set, get) => ({
     saveQuotes(updated);
     set({ quotes: updated });
   },
+
+  removeQuote: (quoteId: string) => {
+    const updated = get().quotes.filter(q => q.id !== quoteId);
+    saveQuotes(updated);
+    set({ quotes: updated });
+  }
+
 }));
