@@ -52,7 +52,7 @@ const BookDetailPage: React.FC = () => {
       {/* Нижний блок: Рецензии и Цитаты */}
       <Box
         sx={{
-          width: { xs: '100%', md: '1200px' },
+          width: { xs: '100%', md: '100%' },
           maxWidth: '1200px',
         }}
       >

@@ -21,7 +21,6 @@ export type Book = {
   images?: string[];       // несколько картинок
   createdAt: string;
 
-  // Добавляем для фронта
   reviews?: Review[];      // рецензии, уже есть тип review.ts
   quotes?: Quote[];        // цитаты, тип quote.ts
   categories?: string[];   // жанры/категории книги (может пригодиться для фильтров)

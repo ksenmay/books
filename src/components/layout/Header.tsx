@@ -15,6 +15,7 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import { useTheme } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; 
 import { useState } from 'react';
 import { useAuthStore } from '../../stores/useAuthStore';
 
@@ -31,13 +32,21 @@ export const Header = () => {
     : [{ label: 'Главная', to: '/' }]; // только для гостей
 
   // ===== Кнопки авторизации / профиля =====
+  const navigate = useNavigate(); // <-- добавить в начале Header, после useAuthStore()
+
   const authButtons = user
-    ? [
-        { label: 'Избранное', to: '/favorites' },
-        { label: 'Профиль', to: '/profile' },
-        { label: 'Выйти', onClick: logout },
-      ]
-    : [{ label: 'Войти', to: '/login' }];
+      ? [
+          { label: 'Избранное', to: '/favorites' },
+          { label: 'Профиль', to: '/profile' },
+          { 
+            label: 'Выйти', 
+            onClick: () => {
+              logout();      // выйти из аккаунта
+              navigate('/'); // редирект на главную
+            },
+          },
+        ]
+      : [{ label: 'Войти', to: '/login' }];
 
   // ===== Функция для рендера кнопок =====
   const renderButton = (btn: any, idx: number) =>
@@ -178,14 +187,16 @@ export const Header = () => {
                 </ListItemButton>
               ) : (
                 <ListItemButton
-                  key={idx}
-                  onClick={() => {
-                    btn.onClick?.();
-                    setOpen(false);
-                  }}
-                >
-                  <ListItemText primary={btn.label} />
-                </ListItemButton>
+                key={idx}
+                onClick={() => {
+                  btn.onClick?.(); // logout
+                  setOpen(false); // закрыть Drawer
+                  navigate('/'); // редирект на корень
+                }}
+              >
+                <ListItemText primary={btn.label} />
+              </ListItemButton>
+
               )
             )}
           </List>
