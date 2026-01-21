@@ -17,6 +17,7 @@ const QuotesList: React.FC<QuotesListProps> = ({ quotes }) => {
           sx={{
             p: 2,
             bgcolor: 'transparent',  // прозрачный фон
+            boxShadow: 'none', 
             borderLeft: '4px double  #6c5b4f', // цветная полоска слева
           }}
         >

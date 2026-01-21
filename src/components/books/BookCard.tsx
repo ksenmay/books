@@ -5,12 +5,15 @@ import { useBookStore } from '../../stores/useBookStore';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useState } from 'react';
+import { useAuthStore } from '../../stores/useAuthStore';
 
 type Props = {
   book: Book;
 };
 
 const BookCard = ({ book }: Props) => {
+  const user = useAuthStore((s) => s.user);
+  const isOwner = user && book.ownerId === user.id;
   const navigate = useNavigate();
   const selectBook = useBookStore((state) => state.selectBook);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -55,6 +58,27 @@ const BookCard = ({ book }: Props) => {
             height: '60%',
           }}
         >
+
+          {/* ===== БЕЙДЖ МОЯ / ЧУЖАЯ ===== */}
+          {user && (
+            <Chip
+              label={isOwner ? 'моя книга' : 'чужая книга'}
+              size="small"
+              color={isOwner ? 'success' : 'default'}
+              sx={{
+                position: 'absolute',
+                top: 8,
+                left: 8,
+                fontWeight: 500,
+                backdropFilter: 'blur(4px)',
+                backgroundColor: isOwner
+                  ? 'rgba(46,125,50,0.55)'
+                  : 'rgba(0,0,0,0.55)',
+                color: '#fff',
+              }}
+            />
+          )}
+
           <CardMedia
             component="img"
             image={images[currentImageIndex]}

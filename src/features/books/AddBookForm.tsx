@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from 'react'; 
 import { useAuthStore } from '../../stores/useAuthStore';
 import {
     Radio,
@@ -12,7 +12,6 @@ import {
     Typography,
     Card,
     CardContent,
-    MenuItem,
     Stack,
 } from '@mui/material';
 import { useBookStore } from '../../stores/useBookStore';
@@ -22,21 +21,37 @@ export const AddBookForm = () => {
   const addBook = useBookStore((s) => s.addBook);
   const user = useAuthStore((s) => s.user);
 
-    if (!user) {
+  if (!user) {
     return (
         <Typography color="error">
         Для добавления книги необходимо войти в систему
         </Typography>
     );
-    }
-
+  }
 
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState<number | ''>('');
   const [exchangeable, setExchangeable] = useState(false);
-  const [images, setImages] = useState<string>('');
+  const [images, setImages] = useState<string[]>([]);
+
+  // обработка выбора файлов
+  const handleFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const files = Array.from(e.target.files);
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const result = event.target?.result;
+        if (typeof result === 'string') {
+          setImages((prev) => [...prev, result]); // добавляем base64
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,9 +65,7 @@ export const AddBookForm = () => {
       exchangeable,
       price: exchangeable ? undefined : price || undefined,
       status: 'доступна',
-      images: images
-        ? images.split(',').map((url) => url.trim())
-        : undefined,
+      images: images.length > 0 ? images : undefined,
       createdAt: new Date().toISOString(),
       reviews: [],
       quotes: [],
@@ -64,7 +77,7 @@ export const AddBookForm = () => {
     setDescription('');
     setPrice('');
     setExchangeable(false);
-    setImages('');
+    setImages([]);
   };
 
   return (
@@ -99,57 +112,59 @@ export const AddBookForm = () => {
             />
 
             <FormControl>
-            <FormLabel>Тип размещения</FormLabel>
-            <RadioGroup
-                row
-                value={exchangeable ? 'exchange' : 'sale'}
-                onChange={(e) => {
-                const isExchange = e.target.value === 'exchange';
-                setExchangeable(isExchange);
-
-                // если обмен — цену сбрасываем
-                if (isExchange) {
-                    setPrice('');
-                }
-                }}
-            >
-                <FormControlLabel
-                value="exchange"
-                control={<Radio />}
-                label="Обмен"
-                />
-                <FormControlLabel
-                value="sale"
-                control={<Radio />}
-                label="Продажа"
-                />
-            </RadioGroup>
+              <FormLabel>Тип размещения</FormLabel>
+              <RadioGroup
+                  row
+                  value={exchangeable ? 'exchange' : 'sale'}
+                  onChange={(e) => {
+                  const isExchange = e.target.value === 'exchange';
+                  setExchangeable(isExchange);
+                  if (isExchange) setPrice('');
+                  }}
+              >
+                  <FormControlLabel value="exchange" control={<Radio />} label="Обмен" />
+                  <FormControlLabel value="sale" control={<Radio />} label="Продажа" />
+              </RadioGroup>
             </FormControl>
 
-
             <TextField
-                label="Цена"
-                type="number"
-                disabled={exchangeable}
-                value={price}
-                inputProps={{ min: 1 }}
-                onChange={(e) => {
-                    const value = Number(e.target.value);
-                    setPrice(value >= 1 ? value : '');
-                }}
+              label="Цена"
+              type="number"
+              disabled={exchangeable}
+              value={price}
+              inputProps={{ min: 1 }}
+              onChange={(e) => {
+                  const value = Number(e.target.value);
+                  setPrice(value >= 1 ? value : '');
+              }}
             />
 
-            <TextField
-              label="Ссылки на изображения (через запятую)"
-              placeholder="https://..., https://..."
-              value={images}
-              onChange={(e) => setImages(e.target.value)}
-            />
+            <Box>
+              <Button component="label">
+                Загрузить изображение
+                <input
+                  type="file"
+                  hidden
+                  multiple
+                  accept="image/*"
+                  onChange={handleFilesChange}
+                />
+              </Button>
+              {images.length > 0 && (
+                <Box mt={1} display="flex" gap={1} flexWrap="wrap">
+                  {images.map((img, idx) => (
+                    <img
+                      key={idx}
+                      src={img}
+                      alt={`Картинка ${idx + 1}`}
+                      style={{ width: 60, height: 80, objectFit: 'cover', borderRadius: 4 }}
+                    />
+                  ))}
+                </Box>
+              )}
+            </Box>
 
-            <Button
-              type="submit"
-              size="large"
-            >
+            <Button type="submit" size="large">
               Добавить
             </Button>
           </Stack>
